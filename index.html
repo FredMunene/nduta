@@ -2,26 +2,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Interactive Reveal Cards</title>
-<link ="stylsheet" ="style.css">
-</head>
+<link rel="stylesheet" href="/style.css">
+<style>
+  
+  
+</style>
 <body>
   <div class="card-container" id="cardContainer">
-    <div class="card" data-image="nature.jpg" data-message="Discover the beauty of nature!">
-      <div class="card-front">Click to reveal</div>
-      <div class="card-back">
-        <img class="card-image" src="" alt="" width="150" height="150">
-        <p class="card-message"></p>
-      </div>
-    </div>
-    <div class="card" data-image="space.jpg" data-message="Explore the wonders of the universe!">
-      <div class="card-front">Tap for surprise</div>
-      <div class="card-back">
-        <img class="card-image" src="" alt="" width="150" height="150">
-        <p class="card-message"></p>
-      </div>
-    </div>
-    <div class="card" data-image="art.jpg" data-message="Let your imagination soar!">
-      <div class="card-front">Reveal me</div>
+    <div class="card" data-id="1">
+      <div class="card-front">Click here!</div>
       <div class="card-back">
         <img class="card-image" src="" alt="" width="150" height="150">
         <p class="card-message"></p>
@@ -37,6 +26,8 @@
       const clickedCard = event.target.closest('.card');
       if (!clickedCard) return;
 
+      const cardId = clickedCard.getAttribute('data-id');
+
       if (activeCard && activeCard !== clickedCard) {
         activeCard.classList.remove('active');
       }
@@ -47,19 +38,26 @@
       } else {
         clickedCard.classList.add('active');
         activeCard = clickedCard;
-        updateCardContent(clickedCard);
+        fetchCardData(cardId);
       }
     });
 
-    function updateCardContent(card) {
+    function fetchCardData(id) {
+      fetch(`/data/${id}`)
+        .then(response => response.json())
+        .then(data => {
+          updateCardContent(activeCard, data);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }
+
+    function updateCardContent(card, data) {
       const image = card.querySelector('.card-image');
       const message = card.querySelector('.card-message');
-      const imageSrc = card.dataset.image;
-      const messageText = card.dataset.message;
 
-      image.src = imageSrc;
-      image.alt = `Image related to ${messageText}`;
-      message.textContent = messageText;
+      image.src = data.Image;
+      image.alt = `Image related to ${data.Text}`;
+      message.textContent = data.Text;
     }
   </script>
 </body>
